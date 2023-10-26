@@ -4,12 +4,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"os"
-	"os/signal"
-	"syscall"
 	"time"
 
 	"github.com/go-resty/resty/v2"
+	"github.com/gofiber/fiber/v2"
 	"github.com/joho/godotenv"
 	"github.com/robfig/cron"
 )
@@ -178,7 +178,11 @@ func main() {
 
 	go scheduler.Start()
 
-	sig := make(chan os.Signal, 1)
-	signal.Notify(sig, syscall.SIGINT, syscall.SIGTERM)
-	<-sig
+	app := fiber.New()
+
+	app.Get("/", func(c *fiber.Ctx) error {
+		return c.SendString("Hello, World!")
+	})
+
+	log.Fatal(app.Listen(":3000"))
 }
